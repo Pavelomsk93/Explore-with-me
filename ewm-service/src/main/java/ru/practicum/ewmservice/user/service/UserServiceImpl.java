@@ -17,20 +17,20 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
 
     @Override
     public List<UserDto> getUsersList(List<Long> ids, int from, int size) {
-        PageRequestOverride pageRequestOverride =PageRequestOverride.of(from,size);
-        if(!ids.isEmpty()){
-            return userRepository.getByIdOrderByIdAsc(ids,pageRequestOverride)
+        PageRequestOverride pageRequestOverride = PageRequestOverride.of(from, size);
+        if (!ids.isEmpty()) {
+            return userRepository.getByIdOrderByIdAsc(ids, pageRequestOverride)
                     .stream()
                     .map(UserMapper::toUserDto)
                     .collect(Collectors.toList());
-        }else {
+        } else {
             return userRepository.findAll(pageRequestOverride)
                     .stream()
                     .map(UserMapper::toUserDto)
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService{
         validationUser(userRequest);
         userRepository.findByNameOrderByName()
                 .stream()
-                .filter(name ->name.equals(userRequest.getName()))
+                .filter(name -> name.equals(userRequest.getName()))
                 .forEachOrdered(name -> {
                     throw new AlreadyExistException(
                             String.format("Пользователь с именем %s - уже существует", name));
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService{
         userRepository.deleteById(userId);
     }
 
-    private static void validationUser(NewUserRequest userRequest){
+    private static void validationUser(NewUserRequest userRequest) {
         if (userRequest.getEmail() == null) {
             throw new ValidationException("E-mail не должен быть пустым.");
         }

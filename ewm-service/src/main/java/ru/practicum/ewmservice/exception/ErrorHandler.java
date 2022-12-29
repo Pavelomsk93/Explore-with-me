@@ -16,7 +16,8 @@ public class ErrorHandler {
         log.info("400 {}", e.getMessage(), e);
         return new ErrorResponse(
                 "400 - BAD_REQUEST",
-                e.getMessage());
+                e.getMessage(),
+                ErrorStatusEwm.BAD_REQUEST);
     }
 
     @ExceptionHandler
@@ -25,6 +26,17 @@ public class ErrorHandler {
         log.info("409 {}", e.getMessage(), e);
         return new ErrorResponse(
                 "409 - CONFLICT",
-                e.getMessage());
+                e.getMessage(),
+                ErrorStatusEwm.CONFLICT);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleEntityNotFoundException(final EntityNotFoundException e) {
+        log.info("404 {}", e.getMessage(), e);
+        return new ErrorResponse(
+                "404 - NOT_FOUND",
+                e.getMessage(),
+                ErrorStatusEwm.NOT_FOUND);
     }
 }

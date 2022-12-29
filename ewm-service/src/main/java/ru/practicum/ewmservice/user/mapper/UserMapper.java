@@ -6,7 +6,7 @@ import ru.practicum.ewmservice.user.model.User;
 
 public class UserMapper {
 
-    public static UserDto toUserDto(User user){
+    public static UserDto toUserDto(User user) {
         return new UserDto(
                 user.getId(),
                 user.getName(),
@@ -14,7 +14,7 @@ public class UserMapper {
         );
     }
 
-    public static User toUserNew(NewUserRequest userRequest){
+    public static User toUserNew(NewUserRequest userRequest) {
         return new User(
                 null,
                 userRequest.getName(),

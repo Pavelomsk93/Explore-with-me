@@ -3,12 +3,12 @@ package ru.practicum.ewmservice.user.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
 

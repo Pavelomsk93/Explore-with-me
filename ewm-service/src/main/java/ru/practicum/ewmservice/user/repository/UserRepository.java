@@ -7,9 +7,9 @@ import ru.practicum.ewmservice.util.PageRequestOverride;
 
 import java.util.List;
 
-public interface UserRepository extends JpaRepository<User,Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("select u from User u where u.Id =?1 order by u.Id")
+    @Query("select u from User u where u.id =?1 order by u.id")
     List<User> getByIdOrderByIdAsc(List<Long> id, PageRequestOverride page);
 
     @Query("select c.name from User c")
