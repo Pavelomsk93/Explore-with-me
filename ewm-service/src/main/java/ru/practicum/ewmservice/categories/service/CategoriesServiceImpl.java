@@ -59,7 +59,7 @@ public class CategoriesServiceImpl implements CategoriesService {
                 .stream()
                 .filter(name -> name.equals(categoriesDto.getName())).forEachOrdered(name -> {
                     throw new AlreadyExistException(
-                            String.format("Категрия с названием %s - уже существует", name));
+                            String.format("Категория с названием %s - уже существует", name));
                 });
         Categories categories = CategoriesMapper.toCategories(categoriesDto);
         Categories categoriesUpdate = validationCategories(categories.getId());
