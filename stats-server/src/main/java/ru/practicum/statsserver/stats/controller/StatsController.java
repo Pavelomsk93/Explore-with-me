@@ -13,12 +13,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@ControllerAdvice
 @Slf4j
 public class StatsController {
 
     private final StatsService statsService;
 
-    @GetMapping(path = "/stats")
+    @GetMapping("/stats")
     public List<ViewStats> getStats(
             @RequestParam(name = "start") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
             @RequestParam(name = "end") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
@@ -31,9 +32,9 @@ public class StatsController {
                 unique);
     }
 
-    @PostMapping(path = "/hit")
-    public void createStat(@RequestBody EndpointHit endpointHit) {
-        statsService.createStat(endpointHit);
+    @PostMapping("/hit")
+    public EndpointHit createStat(@RequestBody EndpointHit endpointHit) {
+        return statsService.createStat(endpointHit);
     }
 }
 

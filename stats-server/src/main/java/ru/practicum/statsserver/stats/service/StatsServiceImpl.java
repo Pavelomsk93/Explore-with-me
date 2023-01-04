@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.statsserver.stats.dto.EndpointHit;
 import ru.practicum.statsserver.stats.dto.ViewStats;
 import ru.practicum.statsserver.stats.mapper.StatsMapper;
+import ru.practicum.statsserver.stats.model.Stats;
 import ru.practicum.statsserver.stats.repository.StatsRepository;
 
 import java.time.LocalDateTime;
@@ -42,7 +43,9 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     @Transactional
-    public void createStat(EndpointHit endpointHit) {
-        statsRepository.save(StatsMapper.toStatsEndpoint(endpointHit));
+    public EndpointHit createStat(EndpointHit endpointHit) {
+        Stats endpointSave = statsRepository.save(StatsMapper.toStatsEndpoint(endpointHit));
+        return StatsMapper.toEndpointHit(endpointSave);
+
     }
 }

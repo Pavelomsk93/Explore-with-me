@@ -16,7 +16,8 @@ public class StatsMapper {
                 endpointHit.getApp(),
                 endpointHit.getUri(),
                 endpointHit.getIp(),
-                endpointHit.getTimestamp());
+                endpointHit.getTimeStamp()
+        );
     }
 
     public static ViewStats toViewStats(List<Stats> statHit) {
@@ -27,6 +28,16 @@ public class StatsMapper {
                 statHit.get(0).getApp(),
                 statHit.get(0).getUri(),
                 (long) statHit.size()
+        );
+    }
+
+    public static EndpointHit toEndpointHit(Stats stats) {
+        return new EndpointHit(
+                stats.getId(),
+                stats.getApp(),
+                stats.getUri(),
+                stats.getIp(),
+                stats.getTimestamp()
         );
     }
 }

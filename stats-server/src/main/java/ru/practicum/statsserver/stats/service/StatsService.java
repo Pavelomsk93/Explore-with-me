@@ -11,6 +11,6 @@ import java.util.List;
 public interface StatsService {
     List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique);
 
-    void createStat(EndpointHit endpointHit);
+    EndpointHit createStat(EndpointHit endpointHit);
 
 }
