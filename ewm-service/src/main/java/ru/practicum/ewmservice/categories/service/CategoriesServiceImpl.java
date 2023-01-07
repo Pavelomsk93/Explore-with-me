@@ -32,20 +32,17 @@ public class CategoriesServiceImpl implements CategoriesService {
 
     @Override
     public CategoriesDto getCategoriesById(Long categoryId) {
-        Categories categories = validationCategories(categoryId);
+        Categories categories = checkExistingCategories(categoryId);
         return CategoriesMapper.toCategoriesDto(categories);
     }
 
     @Override
-    @Transactional
     public CategoriesDto createCategory(CategoriesDto categoriesDto) {
         validationBodyCategories(categoriesDto);
-        categoriesRepository.findByNameOrderByName()
-                .stream()
-                .filter(name -> name.equals(categoriesDto.getName())).forEachOrdered(name -> {
-                    throw new AlreadyExistException(
-                            String.format("Категория с названием %s - уже существует", name));
-                });
+        if(categoriesRepository.findByName(categoriesDto.getName())>0){
+            throw new AlreadyExistException(
+                    String.format("Категория с названием %s - уже существует", categoriesDto.getName()));
+        }
         Categories categories = CategoriesMapper.toCategories(categoriesDto);
         Categories categoriesSave = categoriesRepository.save(categories);
         return CategoriesMapper.toCategoriesDto(categoriesSave);
@@ -55,14 +52,12 @@ public class CategoriesServiceImpl implements CategoriesService {
     @Transactional
     public CategoriesDto patchCategory(CategoriesDto categoriesDto) {
         validationBodyCategories(categoriesDto);
-        categoriesRepository.findByNameOrderByName()
-                .stream()
-                .filter(name -> name.equals(categoriesDto.getName())).forEachOrdered(name -> {
-                    throw new AlreadyExistException(
-                            String.format("Категрия с названием %s - уже существует", name));
-                });
+        if(categoriesRepository.findByName(categoriesDto.getName())>0){
+            throw new AlreadyExistException(
+                    String.format("Категория с названием %s - уже существует", categoriesDto.getName()));
+        }
         Categories categories = CategoriesMapper.toCategories(categoriesDto);
-        Categories categoriesUpdate = validationCategories(categories.getId());
+        Categories categoriesUpdate = checkExistingCategories(categories.getId());
         categoriesUpdate.setName(categories.getName());
 
         return CategoriesMapper.toCategoriesDto(categoriesUpdate);
@@ -75,7 +70,7 @@ public class CategoriesServiceImpl implements CategoriesService {
         categoriesRepository.deleteById(categoryId);
     }
 
-    private Categories validationCategories(Long categoryId) {
+    private Categories checkExistingCategories(Long categoryId) {
         return categoriesRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Категория %s не существует.", categoryId)));

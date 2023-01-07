@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getUsersList(List<Long> ids, int from, int size) {
         PageRequestOverride pageRequestOverride = PageRequestOverride.of(from, size);
         if (!ids.isEmpty()) {
-            return userRepository.getByIdOrderByIdAsc(ids, pageRequestOverride)
+            return userRepository.getByIds(ids, pageRequestOverride)
                     .stream()
                     .map(UserMapper::toUserDto)
                     .collect(Collectors.toList());
@@ -39,16 +39,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserDto createUser(NewUserRequest userRequest) {
         validationUser(userRequest);
-        userRepository.findByNameOrderByName()
-                .stream()
-                .filter(name -> name.equals(userRequest.getName()))
-                .forEachOrdered(name -> {
-                    throw new AlreadyExistException(
-                            String.format("Пользователь с именем %s - уже существует", name));
-                });
+        if(userRepository.findByName(userRequest.getName())>0){
+            throw new AlreadyExistException(
+                    String.format("Категория с названием %s - уже существует", userRequest.getName()));
+        }
         User userSave = userRepository.save(UserMapper.toUserNew(userRequest));
         return UserMapper.toUserDto(userSave);
     }

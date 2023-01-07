@@ -23,7 +23,7 @@ public class EventPublicController {
     @GetMapping
     public List<EventShortDto> getEvents(
             @RequestParam(name = "text", required = false) String text,
-            @RequestParam(name = "categories", required = false) List<Long> categories,
+            @RequestParam(name = "categories", required = false) List<Long> categoriesIds,
             @RequestParam(name = "paid", required = false) Boolean paid,
             @RequestParam(name = "rangeStart",
                     defaultValue = "1980-01-01 13:30:38")
@@ -39,7 +39,7 @@ public class EventPublicController {
         log.info("URL: /events. PostMapping/Получение списка событий с фильтрами/getEvents");
         return eventService.getEvents(
                 text,
-                categories,
+                categoriesIds,
                 paid,
                 rangeStart,
                 rangeEnd,

@@ -23,7 +23,7 @@ public class EventAdminController {
 
     @GetMapping
     public List<EventFullDto> searchEvents(
-            @RequestParam(name = "users", required = false) List<Long> usersId,
+            @RequestParam(name = "users", required = false) List<Long> userIds,
             @RequestParam(name = "states", required = false) List<EventState> eventStates,
             @RequestParam(name = "categories", required = false) List<Long> categories,
             @RequestParam(name = "rangeStart", required = false)
@@ -34,7 +34,7 @@ public class EventAdminController {
             @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("URL: /admin/events. GetMapping/Поиск события по параметрам/searchEvents");
         return eventService.searchEvents(
-                usersId,
+                userIds,
                 eventStates,
                 categories,
                 rangeStart,

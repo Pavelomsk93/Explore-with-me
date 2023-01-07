@@ -15,8 +15,8 @@ import ru.practicum.ewmservice.exception.EntityNotFoundException;
 import ru.practicum.ewmservice.exception.ValidationException;
 import ru.practicum.ewmservice.util.PageRequestOverride;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,23 +30,19 @@ public class CompilationServiceImpl implements CompilationService {
     public List<CompilationDto> getCompilations(Boolean pinned, int from, int size) {
         PageRequestOverride pageRequest = PageRequestOverride.of(from, size);
         List<Compilation> compilations = compilationRepository.findByPinned(pinned, pageRequest);
-        List<CompilationDto> compilationDtoList = new ArrayList<>();
-        CompilationDto compilationDto;
-        for (Compilation compilation : compilations) {
-            compilationDto = CompilationMapper.toCompilationDto(compilation, compilation.getEvents());
-            compilationDtoList.add(compilationDto);
-        }
-        return compilationDtoList;
+        return compilations.stream()
+                .map(compilation -> CompilationMapper.toCompilationDto(compilation,compilation.getEvents()))
+                .collect(Collectors.toList());
+
     }
 
     @Override
     public CompilationDto getCompilationById(Long compId) {
-        Compilation compilation = validationCompilation(compId);
+        Compilation compilation = checkExistingCompilation(compId);
         return CompilationMapper.toCompilationDto(compilation, compilation.getEvents());
     }
 
     @Override
-    @Transactional
     public CompilationDto createCompilation(NewCompilationDto compilationDto) {
         validationBodyCompilation(compilationDto);
 
@@ -61,7 +57,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public void addEventToCompilation(Long compId, Long eventId) {
-        Compilation compilation = validationCompilation(compId);
+        Compilation compilation = checkExistingCompilation(compId);
         Event event = validationEvent(eventId);
         List<Event> events = compilation.getEvents();
         if (events.contains(event)) {
@@ -75,7 +71,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public void fixCompilationOnMainPage(Long compId) {
-        Compilation compilation = validationCompilation(compId);
+        Compilation compilation = checkExistingCompilation(compId);
         if (compilation.getPinned()) {
             throw new ValidationException(String.format("Подборка %s уже находится на главной странице", compId));
         }
@@ -91,7 +87,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public void deleteEventToCompilation(Long compId, Long eventId) {
-        Compilation compilation = validationCompilation(compId);
+        Compilation compilation = checkExistingCompilation(compId);
         Event event = validationEvent(eventId);
         List<Event> events = compilation.getEvents();
         if (!events.contains(event)) {
@@ -106,14 +102,14 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public void deleteCompilationOnMainPage(Long compId) {
-        Compilation compilation = validationCompilation(compId);
+        Compilation compilation = checkExistingCompilation(compId);
         if (!compilation.getPinned()) {
             throw new ValidationException(String.format("Подборка %s откреплена от главной страницы", compId));
         }
         compilation.setPinned(false);
     }
 
-    private Compilation validationCompilation(Long compId) {
+    private Compilation checkExistingCompilation(Long compId) {
         return compilationRepository.findById(compId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Подборки %s не существует.", compId)));

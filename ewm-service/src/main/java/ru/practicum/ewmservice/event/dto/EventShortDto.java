@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@ToString
-@EqualsAndHashCode
 @RequiredArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)

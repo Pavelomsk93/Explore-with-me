@@ -4,10 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.ewmservice.categories.model.Categories;
 
-import java.util.List;
 
 public interface CategoriesRepository extends JpaRepository<Categories, Long> {
 
-    @Query("select c.name from Categories c")
-    List<String> findByNameOrderByName();
+    @Query("select count(c.name)  FROM Categories c where (c.name = :categoryName)")
+    int findByName(String categoryName);
+
 }

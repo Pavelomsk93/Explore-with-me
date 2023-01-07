@@ -1,31 +1,26 @@
 package ru.practicum.ewmservice.requests.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import static ru.practicum.ewmservice.event.model.Event.EVENTS_ID;
-import static ru.practicum.ewmservice.requests.model.Requests.SCHEMA_TABLE;
-import static ru.practicum.ewmservice.requests.model.Requests.TABLE_REQUESTS;
 import static ru.practicum.ewmservice.user.model.User.USERS_ID;
 
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
 @RequiredArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = TABLE_REQUESTS, schema = SCHEMA_TABLE)
+@Table(name = "request")
 public class Requests {
 
-    public final static String TABLE_REQUESTS = "request";
-    public final static String SCHEMA_TABLE = "public";
+
     public final static String REQUESTS_ID = "request_id";
     public final static String REQUESTS_CREATED = "created";
     public final static String REQUESTS_STATE = "state";
@@ -43,11 +38,22 @@ public class Requests {
     Long requester;
 
     @Column(name = REQUESTS_CREATED)
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", iso = DateTimeFormat.ISO.DATE_TIME)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime created;
 
     @Enumerated(EnumType.STRING)
     @Column(name = REQUESTS_STATE)
     ParticipationStatus status;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Requests requests = (Requests) o;
+        return Objects.equals(id, requests.id) && Objects.equals(event, requests.event) && Objects.equals(requester, requests.requester) && Objects.equals(created, requests.created) && status == requests.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, event, requester, created, status);
+    }
 }

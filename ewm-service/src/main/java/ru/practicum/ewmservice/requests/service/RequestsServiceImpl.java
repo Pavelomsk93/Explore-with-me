@@ -12,7 +12,6 @@ import ru.practicum.ewmservice.requests.mapper.RequestMapper;
 import ru.practicum.ewmservice.requests.model.ParticipationStatus;
 import ru.practicum.ewmservice.requests.model.Requests;
 import ru.practicum.ewmservice.requests.repository.RequestsRepository;
-import ru.practicum.ewmservice.user.model.User;
 import ru.practicum.ewmservice.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
@@ -28,7 +27,6 @@ public class RequestsServiceImpl implements RequestsService {
 
     @Override
     public List<ParticipationRequestDto> getInformationRequest(Long userId) {
-        User user = validationUser(userId);
         return requestsRepository.findByRequester(userId)
                 .stream()
                 .map(RequestMapper::toRequestDto)
@@ -36,10 +34,8 @@ public class RequestsServiceImpl implements RequestsService {
     }
 
     @Override
-    @Transactional
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
         Event event = validationEvent(eventId);
-        validationUser(userId);
         if (!event.getRequestModeration()) {
             if (event.getInitiator().getId().equals(userId)) {
                 throw new ValidationException("Организатор не может быть участником события");
@@ -80,12 +76,6 @@ public class RequestsServiceImpl implements RequestsService {
         return requestsRepository.findById(requestId)
                 .orElseThrow(() -> new ValidationException(
                         String.format("Запрос на участие %s не существует.", requestId)));
-    }
-
-    private User validationUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new ValidationException(
-                        String.format("Пользователь %s не существует.", userId)));
     }
 
     private Event validationEvent(Long eventId) {

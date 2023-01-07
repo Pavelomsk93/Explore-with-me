@@ -1,22 +1,22 @@
 package ru.practicum.statsserver.stats.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "stats", schema = "public")
+@Table(name = "stats")
 public class Stats {
 
     @Id
@@ -37,4 +37,17 @@ public class Stats {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime timestamp;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Stats stats = (Stats) o;
+        return Objects.equals(id, stats.id) && Objects.equals(app, stats.app) && Objects.equals(uri, stats.uri) && Objects.equals(ip, stats.ip) && Objects.equals(timestamp, stats.timestamp);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, app, uri, ip, timestamp);
+    }
 }

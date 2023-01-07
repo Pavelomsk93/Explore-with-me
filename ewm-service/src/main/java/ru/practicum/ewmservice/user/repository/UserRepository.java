@@ -9,10 +9,10 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("select u from User u where u.id =?1 order by u.id")
-    List<User> getByIdOrderByIdAsc(List<Long> id, PageRequestOverride page);
+    @Query("select u from User u where u.id in :ids ")
+    List<User> getByIds(List<Long> ids, PageRequestOverride page);
 
-    @Query("select c.name from User c")
-    List<String> findByNameOrderByName();
+    @Query("select count(u.name)  FROM User u where (u.name = :userName)")
+    int findByName(String userName);
 
 }

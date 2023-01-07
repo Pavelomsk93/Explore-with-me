@@ -5,32 +5,38 @@ import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 
-import static ru.practicum.ewmservice.categories.model.Categories.SCHEMA_TABLE;
+import java.util.Objects;
+
 
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
 @RequiredArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = Categories.TABLE_CATEGORIES, schema = SCHEMA_TABLE)
+@Table(name = "categories")
 public class Categories {
-
-    public final static String TABLE_CATEGORIES = "categories";
-    public final static String SCHEMA_TABLE = "public";
-    public final static String CATEGORIES_ID = "category_id";
-    public final static String CATEGORIES_NAME = "category_name";
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = CATEGORIES_ID)
+    @Column(name = "category_id")
     Long id;
 
-    @Column(name = CATEGORIES_NAME)
+    @Column(name = "category_name")
     String name;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Categories that = (Categories) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
 }
 

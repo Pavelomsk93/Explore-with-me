@@ -5,21 +5,19 @@ import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 
-import static ru.practicum.ewmservice.user.model.User.TABLE_USERS;
+import java.util.Objects;
+
 
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
 @RequiredArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = TABLE_USERS, schema = User.SCHEMA_TABLE)
+@Table(name = "users")
 public class User {
 
-    public final static String TABLE_USERS = "users";
-    public final static String SCHEMA_TABLE = "public";
     public final static String USERS_ID = "user_id";
     public final static String USERS_NAME = "user_name";
     public final static String USERS_EMAIL = "email";
@@ -34,5 +32,18 @@ public class User {
 
     @Column(name = USERS_EMAIL)
     String email;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, email);
+    }
 }
 

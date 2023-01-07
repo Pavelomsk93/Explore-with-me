@@ -48,7 +48,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventShortDto> getEvents(
             String text,
-            List<Long> categories,
+            List<Long> categoriesIds,
             Boolean paid,
             LocalDateTime rangeStart,
             LocalDateTime rangeEnd,
@@ -65,8 +65,8 @@ public class EventServiceImpl implements EventService {
         }
 
         List<Event> events;
-        if (categories != null) {
-            events = eventRepository.findByCategoryIdsAndText(text, categories);
+        if (categoriesIds != null) {
+            events = eventRepository.findByCategoryIdsAndText(text, categoriesIds);
         } else {
             events = eventRepository.findByText(text);
         }
@@ -82,7 +82,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventFullDto getEventById(Long eventId, HttpServletRequest request) {
-        Event event = validationEvent(eventId);
+        Event event = checkExistingEvent(eventId);
         saveEndpointHit(request);
         if (event.getState().equals(EventState.PUBLISHED)) {
             return EventMapper.toEventFullDto(event);
@@ -97,8 +97,6 @@ public class EventServiceImpl implements EventService {
             int from,
             int size) {
         PageRequestOverride pageRequest = PageRequestOverride.of(from, size);
-        User user = validationUser(userId);
-
         return eventRepository.findByInitiator_IdOrderByEventDateDesc(userId, pageRequest)
                 .stream()
                 .map(EventMapper::toEventShortDto)
@@ -109,8 +107,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getEventByIdForUser(
             Long userId,
             Long eventId) {
-        User user = validationUser(userId);
-        Event event = validationEvent(eventId);
+        Event event = checkExistingEvent(eventId);
         return EventMapper.toEventFullDto(event);
     }
 
@@ -118,8 +115,7 @@ public class EventServiceImpl implements EventService {
     public List<ParticipationRequestDto> getRequestsParticipationInEvent(
             Long userId,
             Long eventId) {
-        User user = validationUser(userId);
-        Event event = validationEvent(eventId);
+        Event event = checkExistingEvent(eventId);
         if (!userId.equals(event.getInitiator().getId())) {
             throw new ValidationException(
                     "Данный пользователь не может обновлять текущее событие");
@@ -131,13 +127,12 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional
     public EventFullDto createEvent(
             Long userId,
             NewEventDto newEventDto) {
         validationBodyEvent(newEventDto);
         User user = validationUser(userId);
-        Categories categories = validationCategories(newEventDto.getCategory());
+        Categories categories = checkExistingCategories(newEventDto.getCategory());
         LocalDateTime now = LocalDateTime.now();
         if (newEventDto.getEventDate().isBefore(now.plusHours(2))) {
             throw new ValidationException(
@@ -158,14 +153,13 @@ public class EventServiceImpl implements EventService {
     public EventFullDto updateEventByUser(
             Long userId,
             UpdateEventRequest updateEventRequest) {
-        User user = validationUser(userId);
         LocalDateTime now = LocalDateTime.now();
         if (updateEventRequest.getEventDate().isBefore(now.plusHours(2))) {
             throw new ValidationException(
                     "Время начала события не может быть раньше, чем через два часа от текущего времени");
         }
-        Event event = validationEvent(updateEventRequest.getEventId());
-        Categories categories = validationCategories(updateEventRequest.getCategory());
+        Event event = checkExistingEvent(updateEventRequest.getEventId());
+        Categories categories = checkExistingCategories(updateEventRequest.getCategory());
         if (!userId.equals(event.getInitiator().getId())) {
             throw new ValidationException(
                     "Данный пользователь не может обновлять текущее событие");
@@ -190,8 +184,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto cancelEventForUser(
             Long userId,
             Long eventId) {
-        User user = validationUser(userId);
-        Event event = validationEvent(eventId);
+        Event event = checkExistingEvent(eventId);
         if (!userId.equals(event.getInitiator().getId())) {
             throw new ValidationException(
                     "Данный пользователь не может обновлять текущее событие");
@@ -213,9 +206,9 @@ public class EventServiceImpl implements EventService {
             Long userId,
             Long eventId,
             Long reqId) {
-        User user = validationUser(userId);
-        Event event = validationEvent(eventId);
-        Requests requests = validationRequests(eventId, reqId);
+        validationUser(userId);
+        Event event = checkExistingEvent(eventId);
+        Requests requests = checkExistingRequests(eventId, reqId);
 
         EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
         checkRequestsParticipation(userId, eventFullDto);
@@ -231,9 +224,8 @@ public class EventServiceImpl implements EventService {
             Long userId,
             Long eventId,
             Long reqId) {
-        User user = validationUser(userId);
-        Event event = validationEvent(eventId);
-        Requests requests = validationRequests(eventId, reqId);
+        Event event = checkExistingEvent(eventId);
+        Requests requests = checkExistingRequests(eventId, reqId);
 
         EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
         checkRequestsParticipation(userId, eventFullDto);
@@ -245,7 +237,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventFullDto> searchEvents(
-            List<Long> usersId,
+            List<Long> userIds,
             List<EventState> eventStates,
             List<Long> categories,
             LocalDateTime rangeStart,
@@ -284,21 +276,21 @@ public class EventServiceImpl implements EventService {
             eventStates.add(EventState.PUBLISHED);
         }
         List<Event> events = new ArrayList<>();
-        if ((categories != null) && (usersId != null)) {
+        if ((categories != null) && (userIds != null)) {
             events = eventRepository.findByInitiatorAndCategoriesAndState(
-                    usersId,
+                    userIds,
                     categories,
                     eventStates,
                     pageRequest);
         }
-        if ((categories == null) && (usersId == null)) {
+        if ((categories == null) && (userIds == null)) {
             events = eventRepository.findByState(eventStates, pageRequest);
         }
-        if ((categories != null) && (usersId == null)) {
+        if ((categories != null) && (userIds == null)) {
             events = eventRepository.findByCategoriesAndState(categories, eventStates, pageRequest);
         }
-        if ((categories == null) && (usersId != null)) {
-            events = eventRepository.findByInitiatorAndState(usersId, eventStates, pageRequest);
+        if ((categories == null) && (userIds != null)) {
+            events = eventRepository.findByInitiatorAndState(userIds, eventStates, pageRequest);
         }
         return events
                 .stream()
@@ -311,8 +303,8 @@ public class EventServiceImpl implements EventService {
     public EventFullDto putEvent(
             Long eventId,
             AdminUpdateEventRequest adminUpdateEventRequest) {
-        Event event = validationEvent(eventId);
-        Categories categories = validationCategories(adminUpdateEventRequest.getCategory());
+        Event event = checkExistingEvent(eventId);
+        Categories categories = checkExistingCategories(adminUpdateEventRequest.getCategory());
 
         LocalDateTime now = LocalDateTime.now();
         if (adminUpdateEventRequest.getEventDate().isBefore(now.plusHours(2))) {
@@ -345,7 +337,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventFullDto publishEvent(Long eventId) {
-        Event event = validationEvent(eventId);
+        Event event = checkExistingEvent(eventId);
         if (event.getState().equals(EventState.PENDING)) {
             event.setState(EventState.PUBLISHED);
             event.setRequestModeration(true);
@@ -363,7 +355,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventFullDto rejectEvent(Long eventId) {
-        Event event = validationEvent(eventId);
+        Event event = checkExistingEvent(eventId);
         if (event.getState().equals(EventState.PENDING) || event.getState().equals(EventState.REJECTED)) {
             event.setState(EventState.CANCELED);
             Event eventSave = eventRepository.save(event);
@@ -417,19 +409,19 @@ public class EventServiceImpl implements EventService {
                         String.format("Пользователь %s не существует.", userId)));
     }
 
-    private Event validationEvent(Long eventId) {
+    private Event checkExistingEvent(Long eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Событие %s не существует.", eventId)));
     }
 
-    private Categories validationCategories(Long catId) {
+    private Categories checkExistingCategories(Long catId) {
         return categoriesRepository.findById(catId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Категория %s не существует.", catId)));
     }
 
-    private Requests validationRequests(Long eventId, Long reqId) {
+    private Requests checkExistingRequests(Long eventId, Long reqId) {
         return requestsRepository.findById(reqId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Запрос на участие %s не существует.", eventId)));
