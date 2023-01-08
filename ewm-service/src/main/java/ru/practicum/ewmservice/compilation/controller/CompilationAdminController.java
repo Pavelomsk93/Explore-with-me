@@ -14,7 +14,7 @@ import ru.practicum.ewmservice.compilation.service.CompilationService;
 public class CompilationAdminController {
 
     private final CompilationService compilationService;
-    private final static String URL_COMP = "/{compId}";
+    private final  String URL_COMP = "/{compId}";
 
     @PostMapping
     public CompilationDto createCompilation(@RequestBody NewCompilationDto compilationDto) {
