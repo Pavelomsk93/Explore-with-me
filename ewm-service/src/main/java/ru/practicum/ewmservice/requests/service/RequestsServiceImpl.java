@@ -12,7 +12,6 @@ import ru.practicum.ewmservice.requests.mapper.RequestMapper;
 import ru.practicum.ewmservice.requests.model.ParticipationStatus;
 import ru.practicum.ewmservice.requests.model.Requests;
 import ru.practicum.ewmservice.requests.repository.RequestsRepository;
-import ru.practicum.ewmservice.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RequestsServiceImpl implements RequestsService {
     private final RequestsRepository requestsRepository;
-    private final UserRepository userRepository;
     private final EventRepository eventRepository;
 
     @Override

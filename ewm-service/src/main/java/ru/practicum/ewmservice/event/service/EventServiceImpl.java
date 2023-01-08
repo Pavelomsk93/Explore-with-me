@@ -328,7 +328,7 @@ public class EventServiceImpl implements EventService {
             event.setLat(adminUpdateEventRequest.getLocation().getLat());
         }
         if (adminUpdateEventRequest.getRequestModeration() != null) {
-            event.getRequestModeration();
+            event.setRequestModeration(adminUpdateEventRequest.getRequestModeration());
         }
         Event eventSave = eventRepository.save(event);
         return EventMapper.toEventFullDto(eventSave);

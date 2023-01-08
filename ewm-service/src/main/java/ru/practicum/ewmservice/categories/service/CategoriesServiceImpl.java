@@ -39,7 +39,7 @@ public class CategoriesServiceImpl implements CategoriesService {
     @Override
     public CategoriesDto createCategory(CategoriesDto categoriesDto) {
         validationBodyCategories(categoriesDto);
-        if(categoriesRepository.findByName(categoriesDto.getName())>0){
+        if (categoriesRepository.findByName(categoriesDto.getName()) > 0) {
             throw new AlreadyExistException(
                     String.format("Категория с названием %s - уже существует", categoriesDto.getName()));
         }
@@ -52,7 +52,7 @@ public class CategoriesServiceImpl implements CategoriesService {
     @Transactional
     public CategoriesDto patchCategory(CategoriesDto categoriesDto) {
         validationBodyCategories(categoriesDto);
-        if(categoriesRepository.findByName(categoriesDto.getName())>0){
+        if (categoriesRepository.findByName(categoriesDto.getName()) > 0) {
             throw new AlreadyExistException(
                     String.format("Категория с названием %s - уже существует", categoriesDto.getName()));
         }

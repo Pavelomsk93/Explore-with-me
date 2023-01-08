@@ -31,7 +31,7 @@ public class CompilationServiceImpl implements CompilationService {
         PageRequestOverride pageRequest = PageRequestOverride.of(from, size);
         List<Compilation> compilations = compilationRepository.findByPinned(pinned, pageRequest);
         return compilations.stream()
-                .map(compilation -> CompilationMapper.toCompilationDto(compilation,compilation.getEvents()))
+                .map(compilation -> CompilationMapper.toCompilationDto(compilation, compilation.getEvents()))
                 .collect(Collectors.toList());
 
     }

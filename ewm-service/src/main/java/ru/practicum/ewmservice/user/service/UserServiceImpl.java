@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto createUser(NewUserRequest userRequest) {
         validationUser(userRequest);
-        if(userRepository.findByName(userRequest.getName())>0){
+        if (userRepository.findByName(userRequest.getName()) > 0) {
             throw new AlreadyExistException(
                     String.format("Категория с названием %s - уже существует", userRequest.getName()));
         }

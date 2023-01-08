@@ -12,23 +12,21 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "compilation")
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class Compilation {
 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "compilation_id")
     Long id;
 
-    @Column(name = "pinned")
+
     Boolean pinned;
 
-    @Column(name = "title")
+
     String title;
 
     @ManyToMany(cascade = CascadeType.PERSIST)

@@ -4,34 +4,29 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
-
 import java.util.Objects;
 
 
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@AllArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "users")
 public class User {
 
-    public final static String USERS_ID = "user_id";
-    public final static String USERS_NAME = "user_name";
-    public final static String USERS_EMAIL = "email";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = USERS_ID)
     Long id;
 
-    @Column(name = USERS_NAME)
+    @Column(name = "user_name")
     String name;
 
-    @Column(name = USERS_EMAIL)
+
     String email;
+
 
     @Override
     public boolean equals(Object o) {
