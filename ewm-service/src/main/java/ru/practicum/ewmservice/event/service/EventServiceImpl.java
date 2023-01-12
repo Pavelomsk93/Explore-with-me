@@ -361,7 +361,7 @@ public class EventServiceImpl implements EventService {
             Event eventSave = eventRepository.save(event);
             return EventMapper.toEventFullDto(eventSave);
         } else if (event.getState().equals(EventState.CANCELED)) {
-            throw new ValidationException("Событие уже отклонено");
+            throw new ValidationException("Событие уже было отклонено");
         } else {
             throw new ValidationException("Невозможно отклонить событие, поскольку оно уже опубликовано");
         }
