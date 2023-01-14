@@ -1,6 +1,5 @@
 package ru.practicum.ewmservice.event.service;
 
-import org.springframework.stereotype.Service;
 import ru.practicum.ewmservice.event.dto.*;
 import ru.practicum.ewmservice.event.model.Event;
 import ru.practicum.ewmservice.event.model.EventState;
@@ -10,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Service
 public interface EventService {
     List<EventShortDto> getEvents(
             String text,

@@ -1,12 +1,10 @@
 package ru.practicum.ewmservice.comments.service;
 
 
-import org.springframework.stereotype.Service;
 import ru.practicum.ewmservice.comments.dto.CommentsDto;
 
 import java.util.List;
 
-@Service
 public interface CommentsService {
 
     List<CommentsDto> getComments(Long eventId, int from, int size);
