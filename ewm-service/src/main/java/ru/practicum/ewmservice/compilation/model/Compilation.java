@@ -28,6 +28,7 @@ public class Compilation {
 
     String title;
 
+    @ToString.Exclude
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "compilation_of_events",
             joinColumns = @JoinColumn(name = "comp_id"),

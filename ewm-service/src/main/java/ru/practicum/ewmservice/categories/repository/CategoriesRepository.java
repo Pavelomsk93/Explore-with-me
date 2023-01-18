@@ -7,7 +7,7 @@ import ru.practicum.ewmservice.categories.model.Categories;
 
 public interface CategoriesRepository extends JpaRepository<Categories, Long> {
 
-    @Query("select count(c.name)  FROM Categories c where (c.name = :categoryName)")
+    @Query("select count(c.name)  FROM Categories c where c.name = :categoryName")
     int findByName(String categoryName);
 
 }

@@ -1,12 +1,10 @@
 package ru.practicum.ewmservice.compilation.service;
 
-import org.springframework.stereotype.Service;
 import ru.practicum.ewmservice.compilation.dto.CompilationDto;
 import ru.practicum.ewmservice.compilation.dto.NewCompilationDto;
 
 import java.util.List;
 
-@Service
 public interface CompilationService {
     List<CompilationDto> getCompilations(Boolean pinned, int from, int size);
 
