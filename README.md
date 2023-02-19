@@ -23,26 +23,12 @@
 
 ```java
 
-    @GetMapping
-    public List<EventFullDto> searchEvents(
-            @RequestParam(name = "users", required = false) List<Long> usersId,
-            @RequestParam(name = "states", required = false) List<EventState> eventStates,
-            @RequestParam(name = "categories", required = false) List<Long> categories,
-            @RequestParam(name = "rangeStart", required = false)
-            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
-            @RequestParam(name = "rangeEnd", required = false)
-            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
-            @RequestParam(name = "from", defaultValue = "0") int from,
-            @RequestParam(name = "size", defaultValue = "10") int size) {
-        log.info("URL: /admin/events. GetMapping/Поиск события по параметрам/searchEvents");
-        return eventService.searchEvents(
-                usersId,
-                eventStates,
-                categories,
-                rangeStart,
-                rangeEnd,
-                from,
-                size);
+    @PutMapping(path = "/{eventId}")
+    public EventFullDto putEvent(
+            @PathVariable Long eventId,
+            @RequestBody AdminUpdateEventRequest adminUpdateEventRequest) {
+        log.info("URL: /admin/events/{eventId}. PutMapping/Редактирование события " + eventId + "/putEvent");
+        return eventService.putEvent(eventId, adminUpdateEventRequest);
     }
 
 ```
